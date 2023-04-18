@@ -14,7 +14,7 @@ using Microsoft.SemanticKernel.AI.Embeddings.VectorOperations;
 using Microsoft.SemanticKernel.Memory;
 using Microsoft.SemanticKernel.Memory.Collections;
 
-namespace Microsoft.SemanticKernel.Connectors.Memory.Cosmos;
+namespace Microsoft.SemanticKernel.Connectors.Memory.AzureCosmosDb;
 
 /// <summary>
 /// An implementation of <see cref="IMemoryStore"/> for Azure Cosmos DB.
@@ -297,19 +297,22 @@ public class CosmosMemoryStore : IMemoryStore
 
         var iterator = container.GetItemQueryIterator<CosmosMemoryRecord>(query);
 
-        var items = await iterator.ReadNextAsync(cancel).ConfigureAwait(false);
-
-        foreach (var item in items)
+        while (iterator.HasMoreResults) //read all result in batch
         {
-            var vector = System.Text.Json.JsonSerializer.Deserialize<float[]>(item.EmbeddingString);
+            var items = await iterator.ReadNextAsync(cancel).ConfigureAwait(false);
 
-            if (vector != null)
+            foreach (var item in items)
             {
-                yield return MemoryRecord.FromJsonMetadata(
-                    item.MetadataString,
-                    new Embedding<float>(vector),
-                    item.Id,
-                    item.Timestamp);
+                var vector = System.Text.Json.JsonSerializer.Deserialize<float[]>(item.EmbeddingString);
+
+                if (vector != null)
+                {
+                    yield return MemoryRecord.FromJsonMetadata(
+                        item.MetadataString,
+                        new Embedding<float>(vector),
+                        item.Id,
+                        item.Timestamp);
+                }
             }
         }
     }
