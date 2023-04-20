@@ -96,11 +96,11 @@ export const ChatInput: React.FC<ChatInputProps> = (props) => {
                     }}
                     onChange={(_event, data) => setValue(data.value)}
                     onKeyDown={(event) => {
-                        if (event.key === 'Enter' && !event.shiftKey) {
+                        /*if (event.key === 'Enter' && !event.shiftKey) {
                             event.preventDefault();
                             handleSubmit(value);
                             return;
-                        } else if (value === '' && previousValue !== '' && event.key === 'ArrowUp') {
+                        } else */ if (value === '' && previousValue !== '' && event.key === 'ArrowUp') {
                             event.preventDefault();
                             setValue(previousValue);
                             return;

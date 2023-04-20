@@ -220,6 +220,8 @@ public class ChatSkill
             context.Fail($"Unable to save new response: {ex.Message}", ex);
             return context;
         }
+        // Use the Semantic Kernel FileIO Skill to write the result to a file
+        var writer = await this._kernel.RunAsync(context.Result, "FileIO", "WriteFile", "ChatHistory.txt");
 
         return context;
     }

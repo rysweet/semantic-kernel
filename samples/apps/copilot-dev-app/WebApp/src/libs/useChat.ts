@@ -59,6 +59,7 @@ export const useChat = () => {
         const ask = { input: value, variables: [{ key: 'audience', value: account?.name ?? 'Unknown User' }] };
         try {
             var result = await sk.invokeAsync(ask, 'ChatSkill', 'Chat');
+            //var result = await sk.invokeAsync(ask, 'plannerskill', 'createplan');
             const messageResult = {
                 timestamp: new Date().getTime(),
                 sender: 'bot',

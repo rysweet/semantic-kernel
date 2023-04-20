@@ -40,6 +40,9 @@ internal static class FunctionLoadingExtensions
         var timeSkill = new TimeSkill();
         kernel.ImportSkill(timeSkill, nameof(TimeSkill));
 
+        var plannerSkill = new PlannerSkill(kernel);
+        kernel.ImportSkill(plannerSkill, nameof(PlannerSkill));
+
         var chatSkill = new ChatSkill(kernel);
         kernel.ImportSkill(chatSkill, nameof(ChatSkill));
     }
