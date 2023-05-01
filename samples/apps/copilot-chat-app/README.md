@@ -68,7 +68,7 @@ First, let’s set up and verify the back-end API server is running.
          Select the option to accept/continue - this is expected when running a service on `localhost`
          It is important to do this, as your browser may need to accept the certificate before allowing the frontend to communicate with the backend.
 
-      > You may also need to acknowledge the Windows Defender Firewall, and allow the app to communicate over private or public netowrks as appropriate.
+      > You may also need to acknowledge the Windows Defender Firewall, and allow the app to communicate over private or public networks as appropriate.
  
 1. Build and start the front-end application
    1. You will also need an Azure Active Directory (AAD) application registration. 
@@ -83,6 +83,7 @@ First, let’s set up and verify the back-end API server is running.
       ```bash
       REACT_APP_BACKEND_URI=https://localhost:40443/
       REACT_APP_AAD_CLIENT_ID=00000000-0000-0000-0000-000000000000
+      REACT_APP_AAD_AUTHORITY=https://login.microsoftonline.com/common
       ```
    
    1. To build and run the front-end application
@@ -129,3 +130,7 @@ You may also need to update the keys used for any secrets set with `dotnet user-
 As of [PR #499](https://github.com/microsoft/semantic-kernel/pull/499), CopilotChat now focuses support on chat completion models, such as `gpt-3.5-*` and `gpt-4-*`
 See [OpenAI's model compatiblity](https://platform.openai.com/docs/models/model-endpoint-compatibility) for
 the complete list of current models supporting chat completions.
+
+## Additional resources
+
+1. [Import Document Application](./importdocument/README.md): Import a document to the memory store.
