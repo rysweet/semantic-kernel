@@ -14,7 +14,7 @@ public abstract class OpenAIClientBase : ClientBase
     /// <summary>
     /// OpenAI / Azure OpenAI Client
     /// </summary>
-    protected override OpenAIClient Client { get; }
+    private protected override OpenAIClient Client { get; }
 
     /// <summary>
     /// Create an instance of the OpenAI connector
@@ -24,13 +24,12 @@ public abstract class OpenAIClientBase : ClientBase
     /// <param name="organization">OpenAI Organization Id (usually optional)</param>
     /// <param name="httpClient">Custom <see cref="HttpClient"/> for HTTP requests.</param>
     /// <param name="logger">Application logger</param>
-    protected OpenAIClientBase(
+    private protected OpenAIClientBase(
         string modelId,
         string apiKey,
         string? organization = null,
         HttpClient? httpClient = null,
-        ILogger? logger = null
-    )
+        ILogger? logger = null)
     {
         Verify.NotNullOrWhiteSpace(modelId);
         Verify.NotNullOrWhiteSpace(apiKey);

@@ -77,7 +77,7 @@ public class KernelTests
         var nativeSkill = new MySkill();
         var skill = kernel.ImportSkill(nativeSkill, "mySk");
 
-        using CancellationTokenSource cts = new CancellationTokenSource();
+        using CancellationTokenSource cts = new();
         cts.Cancel();
 
         // Act
@@ -97,7 +97,7 @@ public class KernelTests
         var nativeSkill = new MySkill();
         kernel.ImportSkill(nativeSkill, "mySk");
 
-        using CancellationTokenSource cts = new CancellationTokenSource();
+        using CancellationTokenSource cts = new();
 
         // Act
         SKContext result = await kernel.RunAsync(cts.Token, kernel.Func("mySk", "GetAnyValue"));
@@ -132,7 +132,8 @@ public class KernelTests
 
         // Assert
         Assert.Equal(3, skill.Count);
-        Assert.True(kernel.Skills.HasNativeFunction("GetAnyValue"));
+        Assert.True(kernel.Skills.TryGetFunction("GetAnyValue", out ISKFunction? functionInstance));
+        Assert.NotNull(functionInstance);
     }
 
     [Fact]
@@ -176,9 +177,12 @@ public class KernelTests
         {
             await Task.Delay(0);
 
-            context.ThrowIfSkillCollectionNotSet();
+            if (context.Skills == null)
+            {
+                Assert.Fail("Skills collection is missing");
+            }
 
-            FunctionsView procMem = context.Skills!.GetFunctionsView();
+            FunctionsView procMem = context.Skills.GetFunctionsView();
 
             foreach (KeyValuePair<string, List<FunctionView>> list in procMem.SemanticFunctions)
             {

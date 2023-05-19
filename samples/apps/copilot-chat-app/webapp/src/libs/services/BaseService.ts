@@ -1,4 +1,6 @@
-import { AdditionalApiRequirements, AuthHeaderTags } from '../../redux/features/plugins/PluginsState';
+// Copyright (c) Microsoft. All rights reserved.
+
+import { AdditionalApiProperties, AuthHeaderTags } from '../../redux/features/plugins/PluginsState';
 
 interface ServiceRequest {
     commandPath: string;
@@ -17,7 +19,7 @@ export class BaseService {
         enabledPlugins?: {
             headerTag: AuthHeaderTags;
             authData: string;
-            apiRequirements?: AdditionalApiRequirements;
+            apiProperties?: AdditionalApiProperties;
         }[],
     ): Promise<T> => {
         const { commandPath, method, body } = request;
@@ -26,18 +28,17 @@ export class BaseService {
             'Content-Type': 'application/json',
         });
 
-        // For each enabled plugin, pass its auth information as a customer header
-        // to the backend so the server can authenticate to the plugin
+        // API key auth for private hosted instances
+        if (process.env.REACT_APP_SK_API_KEY) {
+            headers.append(`x-sk-api-key`, process.env.REACT_APP_SK_API_KEY as string);
+        }
+
         if (enabledPlugins && enabledPlugins.length > 0) {
+            // For each enabled plugin, pass its auth information as a customer header
+            // to the backend so the server can authenticate to the plugin
             for (var idx in enabledPlugins) {
                 var plugin = enabledPlugins[idx];
                 headers.append(`x-sk-copilot-${plugin.headerTag}-auth`, plugin.authData);
-                if (plugin.apiRequirements) {
-                    const apiRequirments = plugin.apiRequirements;
-                    for (var property in apiRequirments) {
-                        headers.append(`x-sk-copilot-${plugin.headerTag}-${property}`, apiRequirments[property].value!);
-                    }
-                }
             }
         }
 
@@ -51,7 +52,8 @@ export class BaseService {
 
             if (!response.ok) {
                 const responseText = await response.text();
-                const errorMessage = `${response.status}: ${response.statusText}` + (responseText ? ` => ${responseText}` : '');
+                const errorMessage =
+                    `${response.status}: ${response.statusText}` + (responseText ? ` => ${responseText}` : '');
 
                 throw Object.assign(new Error(errorMessage));
             }

@@ -23,9 +23,14 @@ async def test_azure_chat_completion_with_skills():
         deployment_name, api_key, endpoint = sk.azure_openai_settings_from_dot_env()
         deployment_name = "gpt-35-turbo"
 
+    print("* Service: Azure OpenAI Chat Completion")
+    print(f"* Endpoint: {endpoint}")
+    print(f"* Deployment: {deployment_name}")
+
     # Configure LLM service
-    kernel.config.add_text_completion_service(
-        "text_completion", sk_oai.AzureChatCompletion(deployment_name, endpoint, api_key)
+    kernel.add_chat_service(
+        "chat_completion",
+        sk_oai.AzureChatCompletion(deployment_name, endpoint, api_key),
     )
 
     await e2e_text_completion.summarize_function_test(kernel)

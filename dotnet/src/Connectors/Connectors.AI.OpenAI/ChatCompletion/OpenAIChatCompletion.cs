@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,23 +42,39 @@ public sealed class OpenAIChatCompletion : OpenAIClientBase, IChatCompletion, IT
         ChatRequestSettings? requestSettings = null,
         CancellationToken cancellationToken = default)
     {
-        if (requestSettings == null) { requestSettings = new ChatRequestSettings(); }
+        return this.InternalGenerateChatMessageAsync(chat, requestSettings ?? new(), cancellationToken);
+    }
 
-        return this.InternalGenerateChatMessageAsync(chat, requestSettings, cancellationToken);
+    /// <inheritdoc/>
+    public IAsyncEnumerable<string> GenerateMessageStreamAsync(
+        ChatHistory chat,
+        ChatRequestSettings? requestSettings = null,
+        CancellationToken cancellationToken = default)
+    {
+        return this.InternalGenerateChatMessageStreamAsync(chat, requestSettings ?? new(), cancellationToken);
     }
 
     /// <inheritdoc/>
     public ChatHistory CreateNewChat(string instructions = "")
     {
-        return this.InternalCreateNewChat(instructions);
+        return InternalCreateNewChat(instructions);
     }
 
     /// <inheritdoc/>
-    public Task<string> CompleteAsync(
+    public IAsyncEnumerable<ITextCompletionStreamingResult> GetStreamingCompletionsAsync(
         string text,
         CompleteRequestSettings requestSettings,
         CancellationToken cancellationToken = default)
     {
-        return this.InternalCompleteTextUsingChatAsync(text, requestSettings, cancellationToken);
+        return this.InternalGetTextCompletionAsChat(text, requestSettings, cancellationToken).ToAsyncEnumerable();
+    }
+
+    /// <inheritdoc/>
+    public Task<IReadOnlyList<ITextCompletionResult>> GetCompletionsAsync(
+        string text,
+        CompleteRequestSettings requestSettings,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(this.InternalGetTextCompletionAsChat(text, requestSettings, cancellationToken) as IReadOnlyList<ITextCompletionResult>);
     }
 }
